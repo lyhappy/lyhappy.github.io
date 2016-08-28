@@ -1,4 +1,4 @@
-# Where things are
+#Where things are
 source:       .
 destination:  ./_site
 plugins:      ./_plugins
