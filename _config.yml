@@ -2,7 +2,7 @@
 #   Main Configs   #
 # ---------------- #
 baseurl: 
-url: http://mazhuang.org/jekyll-theme-solid
+url: https://lyhappy.github.io/
 date_format: "ordinal"
 title: jekyll-theme-solid
 author: Zhuang Ma 
@@ -34,4 +34,4 @@ collections:
 # ---------------- #
 #      Comments    #
 # ---------------- #
-netease_gentie_key: 560ed243b708465d82d5a0a5f3b83da1
+# netease_gentie_key: 560ed243b708465d82d5a0a5f3b83da1
