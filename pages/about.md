@@ -1,28 +1,15 @@
 ---
 layout: page
-title: Zhuang Ma
-description: Zhuang Ma的个人简介。
-keywords: Zhuang Ma, 马壮
+title: Hero L.
+description: L的个人简介。
+keywords: L
 permalink: /about/
 ---
 
-**Software Engineer at [Sogou, Inc.](http://www.sogou.com)**
+**Software Engineer**
 
 Beijing City, China \| Computer Software
   
-*Education:* Wuhan Institute of Technology
 
-scholar, CS/IT
+*Contact:* U2FsdGVkX1/kgjn03J3/Q+3eXNpOFbypI2iSA/xYxxwd+QW6OiaaU5TRZaA7TkIY
 
-*Contact:* `print '%s@%s' % ('ChumpMa', 'gmail.com')  #via Python`
-
-*Social:*  [github](http://github.com/mzlogin) \| [linkedin](http://www.linkedin.com/in/mazhuang) \| [weibo](http://weibo.com/mzlogin) \| [douban](http://www.douban.com/people/freedim/) \| [blog](http://mazhuang.org)
-    
-```c++
-#include <iostream>
-int main()
-{
-	std::cout << "Hello, friends!" << std::endl;
-	return 0;
-}
-```
