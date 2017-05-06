@@ -2,7 +2,7 @@
 #   Main Configs   #
 # ---------------- #
 baseurl: 
-url: https://lyhappy.github.io/
+url: https://lyhappy.github.io
 date_format: "ordinal"
 title: 滴水穿石
 author: Hero L. 
