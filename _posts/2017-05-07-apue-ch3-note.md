@@ -1,7 +1,7 @@
 ---
 layout: post
 title: CH3 文件I/O
-categories: apue 学习笔记
+categories: APUE学习笔记
 date: 2017-05-07
 ---
 

@@ -1,7 +1,7 @@
 ---
 layout: post
 title: CH1 UNIX基础知识
-categories: apue 学习笔记
+categories: APUE学习笔记
 date: 2017-02-03
 ---
 
