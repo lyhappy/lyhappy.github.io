@@ -271,6 +271,33 @@ int ftruncate(int fd, off_t length);
 ![](../../../../images/filesystem.png)
 
 
+* 一块硬盘(disk)可以分为多个**分区**(partition)
+* 每个分区可以包含一个文件系统(file system)
+* 文件系统由**自举块**(boot block)，**超级块**(super block)和若干个**柱面组**(cylinder group)组成
+* 一个柱面组由**超级块副本**(super block copy)，**配置信息**(cg info)，**i节点图**(i-node map)，**块位图**(block bitmap)，若干个**i节点块**(i-nodes)和数据块(data blocks)组成
+
+![](../../../../images/i-nodes_and_data_blocks.png)
+
+* 图中两个目录项(directory entry)指向同一个i-node节点，每个i-node节点都一个计数器，记录指向其的目录项数目。
+* 当i-node上的计数器变为0时，文件内容才会真正被删除(释放数据块)。
+* 这就是为何"unlinking a file"通常并不意味着删除与文件关联的数据块的原因。
+* 这也是为何移除目录项被称为unlink而不是delete的原因。
+* i-node节点的引用计数器在stat结构中，由st_nlink记录。
+* 这种链接方式称为硬链接(hard links)。
+* 在符号链接(symbolic links)中，并不公用i-node和data blocks，链接文件的data blocks中记录的被链接文件的路径。
+* i-node节点包含关于文件的有信息: 文件类型，访问权限控制位，文件大小，数据块的地址等待。
+* 目录项中的i-node编号只能指向同一个文件系统中的i-node，所以`ln`命令不能创建跨文件系统的链接。
+* `mv`命令本质上是创建了一个新的目录项并关联在旧的i-node节点上，同时unlink旧的目录项。
+
+![](../../../../images/link_count_field_for_a_directory.png)
+
+* 不含有子目录的目录项，其i-node节点的计数器总是2(被自身和父目录引用）
+* 含有子目录的目录项，其i-node节点的计数器器至少为3（2 + 子目录数）
+
+
+
+
+
 
 
 
