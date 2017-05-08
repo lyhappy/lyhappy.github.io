@@ -268,7 +268,7 @@ int ftruncate(int fd, off_t length);
 
 ## 文件系统
 
-![](images/filesystem.png)
+![](../../../../images/filesystem.png)
 
 
 
