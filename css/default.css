@@ -123,7 +123,7 @@ div.nav_rss a {
 	color: #555;
 }
 
-div.nav_rss a {
+div.nav_rss a:hover {
 	padding: 0 15% 0 15%;
 	background-color: LightGrey;
 	color: #ffffff;
