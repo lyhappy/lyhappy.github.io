@@ -266,7 +266,9 @@ int ftruncate(int fd, off_t length);
 > If the previous size of the file was greater than length, the data beyond length is no longer accessible. 
 > Otherwise, if the previous size was less than length, the file size will increase and the data between the old end of file and the new end of file will read as 0 
 
+## 文件系统
 
+![](images/filesystem.png)
 
 
 
