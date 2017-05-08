@@ -139,9 +139,9 @@ open 和 create 函数可以创建文件, mkdir 函数可以创建目录。新�
 文件的所有者ID是创建文件的进程的有效用户ID。
 文件的组ID可以是创建文件的进程的有效组ID，也可以是文件所在目录的组ID。
 
-> **FreeBSD 8.0** and **Mac OS X 10.6.8** always copy the new file’s group ID from the directory.
-> **Several Linux** file systems allow the choice between the two options to be selected using a **mount(1)** command option. 
-> The default behavior for **Linux 3.2.0** and **Solaris 10** is to determine the group ID of a new file depending on whether the *set-group-ID bit* is set for the directory in which the file is created. If this bit is set, the new file’s group ID is copied from the directory; otherwise, the new file’s group ID is set to the effective group ID of the process.
+> <p>**FreeBSD 8.0** and **Mac OS X 10.6.8** always copy the new file’s group ID from the directory. </p>
+> <p>**Several Linux** file systems allow the choice between the two options to be selected using a **mount(1)** command option. </p>
+> <p>The default behavior for **Linux 3.2.0** and **Solaris 10** is to determine the group ID of a new file depending on whether the *set-group-ID bit* is set for the directory in which the file is created. If this bit is set, the new file’s group ID is copied from the directory; otherwise, the new file’s group ID is set to the effective group ID of the process.</p>
 
 ## access & faccessat
 
@@ -262,9 +262,9 @@ int ftruncate(int fd, off_t length);
 		// Both return: 0 if OK, −1 on error
 ```
 
-> These two functions truncate an existing file to length bytes. 
-> If the previous size of the file was greater than length, the data beyond length is no longer accessible. 
-> Otherwise, if the previous size was less than length, the file size will increase and the data between the old end of file and the new end of file will read as 0 
+> <p>These two functions truncate an existing file to length bytes. </p>
+> <p>If the previous size of the file was greater than length, the data beyond length is no longer accessible. </p>
+> <p>Otherwise, if the previous size was less than length, the file size will increase and the data between the old end of file and the new end of file will read as 0 </p>
 
 
 
