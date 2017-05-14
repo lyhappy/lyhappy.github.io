@@ -561,7 +561,7 @@ S_IROTH | other-read | other permission to read file | other permission to read 
 S_IWOTH | other-write | other permission to write file | other permission to remove and create files in directory 
 S_IXOTH | other-execute | other permission to execute file | other permission to search for given pathname in directory 
 
-The final nine constants can also be grouped into threes, as follows:
+The final nine constants can also be grouped into threes, as follows:<br>
           S_IRWXU = S_IRUSR | S_IWUSR | S_IXUSR<br>
           S_IRWXG = S_IRGRP | S_IWGRP | S_IXGRP<br>
           S_IRWXO = S_IROTH | S_IWOTH | S_IXOTH<br>
