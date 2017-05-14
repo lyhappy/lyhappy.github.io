@@ -562,6 +562,6 @@ S_IWOTH | other-write | other permission to write file | other permission to rem
 S_IXOTH | other-execute | other permission to execute file | other permission to search for given pathname in directory 
 
 The final nine constants can also be grouped into threes, as follows:
-          S_IRWXU = S_IRUSR | S_IWUSR | S_IXUSR
-          S_IRWXG = S_IRGRP | S_IWGRP | S_IXGRP
-          S_IRWXO = S_IROTH | S_IWOTH | S_IXOTH
+          S_IRWXU = S_IRUSR | S_IWUSR | S_IXUSR<br>
+          S_IRWXG = S_IRGRP | S_IWGRP | S_IXGRP<br>
+          S_IRWXO = S_IROTH | S_IWOTH | S_IXOTH<br>
