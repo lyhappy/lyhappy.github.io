@@ -294,14 +294,274 @@ int ftruncate(int fd, off_t length);
 * 不含有子目录的目录项，其i-node节点的计数器总是2(被自身和父目录引用）
 * 含有子目录的目录项，其i-node节点的计数器器至少为3（2 + 子目录数）
 
+## link, linkat, unlink, unlinkat, and remove Functions
 
+```c
+#include <unistd.h>
+int link(const char *existingpath, const char *newpath);
+int linkat(int efd, const char *existingpath, int nfd, const char *newpath, int flag);
+		//	Both return: 0 if OK, −1 on error
+```
 
+这两个函数创建新的目录项，引用existingpath;
+对于linkat函数，efd和existingpath指定了已有文件路径，nfd和newpath指定了新的路径名。当两个路径名的任意一个为相对路径时，其路径依据对应的fd计算；当任意一个fd设置为AT_FDCWD时，那么路径名如果是相对路径就以当前目录为基准，如果路径是绝对路径，fd参数将被忽略。
+当existingpath是一个符号链接时，如果flag参数为AT_SYMLINK_FOLLOW时，新文件链接到旧符号链接所指的文件，否则链接到旧符号链接文件。
 
+创建新的目录项和增加引用计数器必须是一个原子操作。
 
+```c
+#include <unistd.h>
+int unlink(const char *pathname);
+int unlinkat(int fd, const char *pathname, int flag);
+		//	Both return: 0 if OK, −1 on error
+```
 
+这两个函数删除目录项并递减引用计数器。
+调用这两个函数，必须对文件所在目录拥有写权限和执行权限。如果目录设置了黏住位，还需要满足如下条件之一：1)拥有该文件，2)拥有该目录，3)拥有超级权限。
+当文件的引用计数器递减为0，并且同时没有其他进程打开该文件，系统将会删除该文件的内容。
+对于unlinkat，当参数flag的值为AT_REMOVEDIR时，函数的作用与rmdir一样。
 
+对于临时文件，通常可以在创建后立即unlink，可以防止进程崩溃时文件未能删除。
+对于符号链接，unlink只能删除符号链接，而不能直接删除链接所指文件。
 
+remove函数具有和unlink函数，rmdir函数同样的功能。
 
+```c
+nclude <stdio.h>
+int remove(const char *pathname);
+		// Returns: 0 if OK, −1 on error
+```
 
+## rename, renameat
 
+```c
+#include <stdio.h>
+int rename(const char *oldname, const char *newname);
+int renameat(int oldfd, const char *oldname, int newfd, const char *newname);
+		//	Both return: 0 if OK, −1 on error
+```
 
+* 如果oldname所指的是一个文件而不是目录，这种情况下，如果newname已存在，则其不能为目录。rename的实际操作是删除newname所指的文件，将oldname所指的文件重命名为newname。此操作必须对newname和oldname所在的目录具有写操作权限。
+* 如果oldname所指的是一个目录，这种情况下，如果newname已存在，则其必须为目录，其必须为空目录。rename的实际操作是，删除newname所指的目录，将oldname所指的目录重名为newname。此外，newname不能是oldname的子目录。
+* 如果oldname或newname是符号链接，rename只影响链接本身，不影响链接所指的文件。
+* rename不能作用于`.`和`..`目录
+* 当newname和oldname为同一个值时，rename函数不做任何事，同时返回成功。
+* 对于renameat函数，flag可取值AT_FDCWD，行为与其他函数类似。
+
+## 符号链接
+
+硬链接存在以下限制：
+* 不能跨文件系统
+* 对于支持创建目录的硬链接的文件系统，此操作一般也需要超级用户权限。
+
+符号链接不存在以上限制。
+
+函数在处理符号链接文件时，可能是处理符号链接文件本身，也可能是处理符号链接所指的文件。
+本章提到的函数，在处理路径名参数时，是否跟随符号链接的情况如下表：
+
+Function | Does not follow symbolic link | Follows symbolic link
+--- | --- | ---
+ccess |  | •
+chdir |  | •
+chmod |  | •
+chown |  | •
+creat |  | •
+exec |  | •
+lchown | • | 
+link |  | •
+lstat | • | 
+open |  | •
+opendir |  | •
+pathconf |  | •
+readlink | • | 
+remove | • | 
+rename | • | 
+stat |  | •
+truncate |  | •
+unlink | • | 
+
+允许对目录创建链接时，会引入路径循环的问题。如下一组命令：
+
+```shell
+mkdir foo					# make a new directory
+touch foo/a					# create a 0-length file 
+ln -s ../foo foo/testdir	# create a symbolic link
+ls -l foo
+```
+
+>total 0<br>
+-rw-r----- 1 sar 0 Jan 22 00:16 a<br>
+lrwxrwxrwx 1 sar 6 Jan 22 00:16 testdir -> ../foo
+
+当使用`ftw`命令遍历foo目录下的文件时，则会出现 "foo/testdir/testdir/testdir/.../a" 的情况，直到命令报出ELOOP错误才能停止。
+出现这种情况时，符号链接可以用unlink命令解决，硬链接就很麻烦了。所以一般文件系统不支持对目录创建硬链接。
+
+`ls -F`命令在显示符号链接文件时，会在文件名末尾补一个@符号。
+
+## 创建和读取符号链接文件
+
+创建符号链接文件使用symlink和symlinkat函数
+
+```c
+#include <unistd.h>
+int symlink(const char *actualpath, const char *sympath);
+int symlinkat(const char *actualpath, int fd, const char *sympath);
+		//	Both return: 0 if OK, −1 on error
+```
+
+fd的值为AT_FDCWD时，symlinkat和symlink的作用一样。
+
+符号链接文件直接使用open命令打开时，打开的是链接所指的文件。读取链接文件自身的内容有个单独的函数。
+
+```c
+#include <unistd.h>
+ssize_t readlink(const char* restrict pathname, char *restrict buf,
+			size_t bufsize);
+ssize_t readlinkat(int fd, const char* restrict pathname,
+			char *restrict buf, size_t bufsize);
+		//	Both return: number of bytes read if OK, −1 on error
+```
+
+注意，读取到的结果，buf中是一个不以null字符结尾的字符串，需要结合函数返回值确定读取到的内容的长度。
+
+## 文件时间
+
+stat结构体中有三个字段表示文件的三个时间值。
+
+Field | Description | Example | ls(1) option
+--- | --- | --- | ---
+st_atim	| last-access time of file data | read | -u
+st_mtim	| last-modification time of file data | write | default
+st_ctim | last-change time of i-node status | chmod, chown | -c
+
+>The modification time indicates when the contents of the file were last modified. <br>
+>The changed-status time indicates when the i-node of the file was last modified.
+
+![](images/filetimes.png)
+
+## futimens, utimensat, utimes
+
+```c
+#include <sys/stat.h>
+int futimens(int fd, const struct timespec times[2]);
+int utimensat(int fd, const char *path, const struct timespec times[2], int flag);
+		//	Both return: 0 if OK, −1 on error
+```
+
+```c
+struct timespec {
+	__kernel_time_t	tv_sec;			/* seconds */
+	long		tv_nsec;			/* nanoseconds */
+};
+```
+
+这两个函数可用于修改文件的最后访问时间和最后修改时间。
+times数组的第一个值为访问时间，第二个值为修改时间。
+* 如果times为NULL, 则两个时间戳均被修改为当前时间;
+* 如果times表示的访问时间和修改时间任意一个的tv_nsec域设置为UTIME_NOW，则相应的时间戳设置为当前时间，相应的tv_sec域被忽略。
+* 如果times表示的访问时间和修改时间任意一个的tv_nsec域设置为UTIME_OMIT，则相应的时间戳不变，相应的tv_sec域被忽略。
+* 如果tv_nsec的值既不是UTIME_NOW，也不是UTIME_OMIT，则相应的时间由tv_nsec和tv_sec共同决定。
+
+对权限的要求：
+* times为空，或者tv_nsec为UTIME_NOW，需要进程的有效ID为文件的拥有者ID且进程拥有对文件的写权限，或者进程为超级用户权限。
+* times不为空，且tv_nsec不为UTIME_NOW和UTIME_OMIT，需要进程的有效ID为文件的拥有者ID，或者进程为超级用户权限，不需要进程拥有对文件的写权限。
+* 如果times不为空，且两个成员的tv_nsec均为UTIME_OMIT，则没有任何修改发生，不需要权限检查。
+
+futimens 和 utimensat 是POSIX.1的引入的。XSI 定义了具有同样功能的函数utimes
+
+```c
+#include <sys/time.h>
+int utimes(const char *pathname, const struct timeval times[2]);
+		//	Returns: 0 if OK, −1 on error.
+```
+
+```c
+struct timeval {
+	time_t tv_sec;    /* seconds */
+	long   tv_usec;   /* microseconds */
+};
+```
+
+## mkdir, mkdirat, rmdir
+
+```c
+#include <sys/stat.h>
+int mkdir(const char *pathname, mode_t mode);
+int mkdirat(int fd, const char *pathname, mode_t mode);
+		//	Both return: 0 if OK, −1 on error
+```
+
+如果fd的值为AT_FDCWD，或者pathname为绝对路径时，mkdirat和mkdir行为一致。
+
+```c
+#include <unistd.h>
+int rmdir(const char *pathname);
+		//	Returns: 0 if OK, −1 on error
+```
+
+## 读目录
+
+对目录具有访问权限的任何用户都可以读目录，只有内核可以写目录；目录的写权限位和执行权限位决定了在该目录中能否创建文件和删除文件，而不是写目录文件本身。
+
+目录的实际格式与系统实现密切相关，UNIX系统屏蔽了使用read函数读目录文件，提供了一组专用接口(属于POSIX.1)，从而实现将应用程序与目录格式中的实现细节相隔离。
+
+```c
+#include <dirent.h>
+DIR *opendir(const char *pathname); 
+DIR *fdopendir(int fd);
+		//	Both return: pointer if OK, NULL on error 
+struct dirent *readdir(DIR *dp); 
+		//	Returns: pointer if OK, NULL at end of directory or error
+void rewinddir(DIR *dp);
+int closedir(DIR *dp);
+		//	Returns: 0 if OK, −1 on error 
+long telldir(DIR *dp);
+		//	Returns: current location in directory associated with dp
+void seekdir(DIR *dp, long loc);
+```
+
+telldir和seekdir不属于POSIX.1，他们属于XSI扩展。
+
+目录中目录项的顺序与系统实现有关，通常不是按字母序排序。fdopendir返回的DIR，其中被readdir读取到的第一个项是与传给fdopendir的文件描述符的偏移有关。
+
+[p4_7.c](p4_7.c)
+
+## chdir, fchdir, getcwd
+
+```c
+#include <unistd.h>
+int chdir(const char *pathname); int fchdir(int fd);
+		//	Both return: 0 if OK, −1 on error
+```
+
+```c
+#include <unistd.h>
+char *getcwd(char *buf, size_t size);
+		//	Returns: buf if OK, NULL on error
+```
+
+## 设备特殊文件
+
+stat 结构中的字段st_dev和st_rdev表示设备号，只有字符特殊文件和块特殊文件才有st_rdev的值。此值包含实际设备的设备号。
+
+## 文件访问权限位总结
+
+Constant | Description | Effect on regular file | Effect on directory
+--- | --- | --- | ---
+S_ISUID | set-user-ID |	set effective user ID on execution | (not used) 
+S_ISGID | set-group-ID | if group-execute set, then set effective group ID on execution; otherwise, enable mandatory record locking (if supported) | set group ID of new files created in directory to group ID of directory 
+S_ISVTX | sticky bit | control caching of file contents (if supported) | restrict removal and renaming of files in director| 
+S_IRUSR | user-read | user permission to read file | user permission to read directory entries 
+S_IWUSR | user-write | user permission to write file | user permission to remove and create files in directory 
+S_IXUSR | user-execute | user permission to execute file | user permission to search for given pathname in directory 
+S_IRGRP | group-read | group permission to read file | group permission to read directory entries 
+S_IWGRP | group-write | group permission to write file | group permission to remove and create files in directory 
+S_IXGRP | group-execute | group permission to execute file | group permission to search for given pathname in directory 
+S_IROTH | other-read | other permission to read file | other permission to read directory entries 
+S_IWOTH | other-write | other permission to write file | other permission to remove and create files in directory 
+S_IXOTH | other-execute | other permission to execute file | other permission to search for given pathname in directory 
+
+The final nine constants can also be grouped into threes, as follows:
+          S_IRWXU = S_IRUSR | S_IWUSR | S_IXUSR
+          S_IRWXG = S_IRGRP | S_IWGRP | S_IXGRP
+          S_IRWXO = S_IROTH | S_IWOTH | S_IXOTH
