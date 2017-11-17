@@ -3,7 +3,6 @@ layout: default
 description: Hero L's Blog
 keywords: UNIX
 ---
-<script src="https://unpkg.com/vue"></script>
 
 <div class="postlist">
     {% for post in paginator.posts %}
@@ -100,7 +99,5 @@ keywords: UNIX
     <br>
     <button class="greatBtn" style="width: 155px;" v-on:click="onEqualBtnClicked">=</button>
 </div>
-</body>
-<script src="calc.js"></script>
 
 {% include pagination.html %}
