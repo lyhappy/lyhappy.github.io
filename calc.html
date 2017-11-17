@@ -1,0 +1,100 @@
+<html xmlns:v-on="http://www.w3.org/1999/xhtml">
+<script src="https://unpkg.com/vue"></script>
+
+<head style="margin: auto">
+    <title>
+        Calculate
+    </title>
+</head>
+<body>
+<style>
+    /* button.greatBtn {
+        color: green;
+        font-size: 18px;
+        /* outline-width:5px; */
+     /*   margin: 5px;
+        background-color: pink;
+        width: 30px;
+        border-radius: 8px;
+        text-align: center;
+    }*/
+
+    .greatBtn {
+        -moz-box-shadow: 3px 2px 8px 0px #91b8b3;
+        -webkit-box-shadow: 3px 2px 8px 0px #91b8b3;
+        box-shadow: 3px 2px 8px 0px #91b8b3;
+        background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #768d87), color-stop(1, #6c7c7c));
+        background:-moz-linear-gradient(top, #768d87 5%, #6c7c7c 100%);
+        background:-webkit-linear-gradient(top, #768d87 5%, #6c7c7c 100%);
+        background:-o-linear-gradient(top, #768d87 5%, #6c7c7c 100%);
+        background:-ms-linear-gradient(top, #768d87 5%, #6c7c7c 100%);
+        background:linear-gradient(to bottom, #768d87 5%, #6c7c7c 100%);
+        filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#768d87', endColorstr='#6c7c7c',GradientType=0);
+        background-color:#768d87;
+        -moz-border-radius:8px;
+        -webkit-border-radius:8px;
+        border-radius:8px;
+        border:2px solid #566963;
+        display:inline-block;
+        cursor:pointer;
+        color:#ffffff;
+        font-family:Arial;
+        font-size:13px;
+        padding:4px 10px;
+        text-decoration:none;
+        text-shadow:0px 1px 3px #2b665e;
+
+        width: 30px;
+        text-align: center;
+        margin: 5px;
+    }
+    .greatBtn:hover {
+        background:-webkit-gradient(linear, left top, left bottom, color-stop(0.05, #6c7c7c), color-stop(1, #768d87));
+        background:-moz-linear-gradient(top, #6c7c7c 5%, #768d87 100%);
+        background:-webkit-linear-gradient(top, #6c7c7c 5%, #768d87 100%);
+        background:-o-linear-gradient(top, #6c7c7c 5%, #768d87 100%);
+        background:-ms-linear-gradient(top, #6c7c7c 5%, #768d87 100%);
+        background:linear-gradient(to bottom, #6c7c7c 5%, #768d87 100%);
+        filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#6c7c7c', endColorstr='#768d87',GradientType=0);
+        background-color:#6c7c7c;
+    }
+    .greatBtn:active {
+        position:relative;
+        top:1px;
+    }
+
+    textarea.screen {
+        resize:none;
+        text-align: right;
+        display: table-cell;
+        vertical-align: bottom;
+        font-size: 16px;
+        margin: 5px;
+        width: 155px;
+        height: 40px;
+    }
+
+</style>
+
+<h1 style="text-align: center; margin-top: 50px;"> Calculate powered by Vue </h1>
+<div id="my-calc" style="width: 200px; margin: auto;">
+    <textarea rows=2 readonly=true class="screen">{{ formula }} &#13;&#10; {{ number }}</textarea>
+    <br>
+    <button class="greatBtn" v-for="digit in 3" v-on:click="onDigitBtnClicked(digit)">{{ digit }}</button>
+    <button class="greatBtn" v-on:click="onOptBtnClicked('+')">+</button>
+    <br>
+    <button class="greatBtn" v-for="digit in 3" v-on:click="onDigitBtnClicked(digit + 3)">{{ digit + 3 }}</button>
+    <button class="greatBtn" v-on:click="onOptBtnClicked('-')">-</button>
+    <br>
+    <button class="greatBtn" v-for="digit in 3" v-on:click="onDigitBtnClicked(digit + 6)">{{ digit + 6 }}</button>
+    <button class="greatBtn" v-on:click="onOptBtnClicked('*')">×</button>
+    <br>
+    <button class="greatBtn" v-on:click="onDigitBtnClicked(0)">0</button><button class="greatBtn" v-on:click="onPointBtnClicked">.</button><button class="greatBtn" v-on:click="onClearClicked">C</button>
+    <button class="greatBtn" v-on:click="onOptBtnClicked('/')">÷</button>
+    <br>
+    <button class="greatBtn" style="width: 155px;" v-on:click="onEqualBtnClicked">=</button>
+</div>
+</body>
+<script src="calc.js"></script>
+</html>
+
